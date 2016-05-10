@@ -7,5 +7,5 @@ import java.util.ArrayList;
  */
 public class BingoOptions {
     public static ArrayList<String> options;
-    
+
 }

@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
-    public final static String EXTRA_MESSAGE = "xyz.brianf.infosessionbingo.MESSAGE"
+    public final static String EXTRA_MESSAGE = "xyz.brianf.infosessionbingo.MESSAGE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
