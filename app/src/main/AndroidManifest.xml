@@ -19,6 +19,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".DisplayMesssageActivity"></activity>
+        <activity android:name=".BingoActivity"></activity>
     </application>
 
 </manifest>

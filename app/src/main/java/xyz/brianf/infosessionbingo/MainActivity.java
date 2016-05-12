@@ -13,6 +13,10 @@ import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE = "xyz.brianf.infosessionbingo.MESSAGE";
+    public final static String BINGO_NUMBER_MESSAGE = "xyz.brianf.infosessionbingo.BINGOSIZE";
+    public final static String WIDTH_EXTRA = "xyz.brianf.infosessionbingo.WIDTH";
+    public final static String HEIGHT_EXTRA = "xyz.brianf.infosessionbingo.HEIGHT";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,10 +28,16 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Snackbar.make(view, "Open your Bingo Board?", Snackbar.LENGTH_LONG)
+                        .setAction("Play", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    openBingo(view);
+                                }}).show();
             }
         });
+
+
     }
 
     @Override
@@ -57,6 +67,17 @@ public class MainActivity extends AppCompatActivity {
         EditText editText = (EditText) findViewById(R.id.edit_message);
         String message = editText.getText().toString();
         intent.putExtra(EXTRA_MESSAGE, message);
+        startActivity(intent);
+    }
+
+    public void openBingo(View view){
+        Intent intent = new Intent(this, BingoActivity.class);
+        int message = 5;
+        intent.putExtra(BINGO_NUMBER_MESSAGE, message);
+        int width = view.getWidth();
+        int height = view.getHeight();
+        intent.putExtra(HEIGHT_EXTRA, height);
+        intent.putExtra(WIDTH_EXTRA, width);
         startActivity(intent);
     }
 }

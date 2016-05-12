@@ -12,6 +12,7 @@ public class BingoOptions {
     public static ArrayList<String> options;
     private static void initOptionList(){
         //for now, just letters.
+        options = new ArrayList<>();
         for (char i = 'a'; i <= 'z'; i++){
             options.add(String.valueOf(i));
         }

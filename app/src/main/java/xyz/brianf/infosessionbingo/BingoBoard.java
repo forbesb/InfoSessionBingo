@@ -7,10 +7,12 @@ import java.util.ArrayList;
  * Created by brian on 09/05/16.
  */
 public class BingoBoard {
+
+
     private BingoSquare[][] squares;
 
-    public BingoBoard(){
-
+    public BingoBoard(int n){
+        initSquares(n);
     }
 
     public void initSquares(int sideLength){
@@ -22,7 +24,14 @@ public class BingoBoard {
                 squares[i][y] = newsquare;
             }
         }
-
     }
 
+
+    public BingoSquare[][] getSquares() {
+        return squares;
+    }
+
+    public void setSquares(BingoSquare[][] squares) {
+        this.squares = squares;
+    }
 }
