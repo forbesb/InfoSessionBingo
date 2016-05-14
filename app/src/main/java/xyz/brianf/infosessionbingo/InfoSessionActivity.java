@@ -26,7 +26,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
     @Override
     protected  void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        //TODO: layout here
+        //TODO: layout here? or in OnDownloadComplete. Maybe make a "downloadimg" message?
 
         if (savedInstanceState == null){
             pullInfosessions();
@@ -39,6 +39,10 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         rparser.parseJSON();
 
         ArrayList<InfoSession> sessions = rparser.getInfoSessions();
+        filter(sessions, "MATH - Computer Science");
+
+        //TODO: layout here
+
     }
 
     @Override
@@ -59,4 +63,30 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         downloader.start();
 
     }
+
+    private void filter(ArrayList<InfoSession> lst, String audience ){
+        ArrayList<InfoSession> rems = new ArrayList<>();
+        for (InfoSession item: lst){
+            if (! (getAudienceSplit(item.getAudience()).contains(audience))){
+                rems.add(item);
+            }
+        }
+        for (InfoSession item: rems){
+            lst.remove(item);
+        }
+    }
+
+    private ArrayList<String> getAudienceSplit(String audience){
+        String[] splits = audience.split("\"");
+        ArrayList<String> audiences = new ArrayList<>();
+        for (int i = 0; i< splits.length; i++){
+            if ((splits[i]).length()>1)
+                audiences.add(splits[i]);
+        }
+        for (String a: audiences){
+            //System.out.println(a);
+        }
+        return audiences;
+    }
+
 }
