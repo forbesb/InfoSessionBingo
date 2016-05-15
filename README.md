@@ -1,1 +1,1 @@
-#InfoSessionBingo
+#WatInfoSessions
