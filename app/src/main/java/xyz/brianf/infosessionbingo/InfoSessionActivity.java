@@ -1,9 +1,13 @@
 package xyz.brianf.infosessionbingo;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -22,12 +26,13 @@ import Resources.ResourcesParser;
 public class InfoSessionActivity extends AppCompatActivity implements JSONDownloader.onDownloadListener {
     String apiKey = "525683dba54d5b8d1b1de8d30606c00f"; //// TODO: 12/05/16 : Not hardcode this?
     ResourcesParser rparser = new ResourcesParser();
+    ArrayList<InfoSession> sessions;
 
     @Override
     protected  void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         //TODO: layout here? or in OnDownloadComplete. Maybe make a "downloadimg" message?
-
+        setContentView(R.layout.activity_infosession);
         if (savedInstanceState == null){
             pullInfosessions();
         }
@@ -38,11 +43,10 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         rparser.setAPIResult(apiResult);
         rparser.parseJSON();
 
-        ArrayList<InfoSession> sessions = rparser.getInfoSessions();
-        filter(sessions, "MATH - Computer Science");
+        sessions = rparser.getInfoSessions();
+        //TODO: filter on request
 
-        //TODO: layout here
-
+        updateDisplay(35);
     }
 
     @Override
@@ -54,7 +58,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
             }}).show();
     }
 
-    public void pullInfosessions(){
+    private void pullInfosessions(){
         rparser.setParseType(ResourcesParser.ParseType.INFOSESSIONS);
         String apiURL = UWOpenDataAPI.buildURL(rparser.getEndPoint(), apiKey);
 
@@ -62,6 +66,30 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         downloader.setOnDownloadListener(this);
         downloader.start();
 
+    }
+
+    private void updateDisplay(int index){
+        final InfoSession i = sessions.get(index);
+        final View.OnClickListener register = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int id = i.getId();
+                String url = "https://info.uwaterloo.ca/infocecs/students/rsvp/index.php?id="+id+"&mode=on";
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(browserIntent);
+
+            }};
+        System.out.println(i.getLocation());
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.sessionName)).setText(i.getEmployer());
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.locationText)).setText(i.getLocation());
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.timeText)).setText(i.getDate()+ ":" + i.getStart_time() + "-" + i.getEnd_time());
+                ((Button) InfoSessionActivity.this.findViewById(R.id.registerButton)).setOnClickListener(register);
+            }
+        });
     }
 
     private void filter(ArrayList<InfoSession> lst, String audience ){
