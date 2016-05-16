@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">InfoSessionBingo</string>
+    <string name="app_name">WatInfoSessions</string>
     <string name="action_settings">Settings</string>
     <string name="edit_message">Edit Here!</string>
     <string name="button_send">Send</string>

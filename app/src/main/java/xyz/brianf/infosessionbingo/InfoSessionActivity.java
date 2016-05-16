@@ -5,9 +5,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -34,9 +38,13 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         super.onCreate(savedInstanceState);
         //TODO: layout here? or in OnDownloadComplete. Maybe make a "downloadimg" message?
         setContentView(R.layout.activity_infosession);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.topbar);
+        setSupportActionBar(toolbar);
+
         if (savedInstanceState == null){
             pullInfosessions();
         }
+
     }
 
     @Override
@@ -46,10 +54,11 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
 
         sessions = rparser.getInfoSessions();
         //TODO: filter on request
+
         final View.OnClickListener next = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (currentSession<sessions.size()) {
+                if (currentSession<(sessions.size()-1)) {
                     currentSession += 1;
                     updateDisplay(currentSession);
                 }
@@ -83,6 +92,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
             }}).show();
     }
 
+
     private void pullInfosessions(){
         rparser.setParseType(ResourcesParser.ParseType.INFOSESSIONS);
         String apiURL = UWOpenDataAPI.buildURL(rparser.getEndPoint(), apiKey);
@@ -106,6 +116,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
                 startActivity(browserIntent);
 
             }};
+
         final View.OnClickListener map = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -115,16 +126,23 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
                 startActivity(mapIntent);
 
             }};
-
-
+        //minimizing work done on UI thread, might as well build strings first
+        final String employer = i.getEmployer();
+        final String location = i.getBuilding().getName()+" ("+i.getBuilding().getCode()+")";
+        final String room = "Room: " + i.getBuilding().getRoom();
+        final String date = i.getDate();
+        final String time = i.getStart_time() + "-" + i.getEnd_time();
+        final String description = i.getDescription();
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ((TextView) InfoSessionActivity.this.findViewById(R.id.sessionName)).setText(i.getEmployer());
-                ((TextView) InfoSessionActivity.this.findViewById(R.id.locationText)).setText(i.getBuilding().getName()+" ("+i.getBuilding().getCode()+")");
-                ((TextView) InfoSessionActivity.this.findViewById(R.id.dateText)).setText(i.getDate());
-                ((TextView) InfoSessionActivity.this.findViewById(R.id.timeText)).setText(i.getStart_time() + "-" + i.getEnd_time());
-                ((TextView) InfoSessionActivity.this.findViewById(R.id.description)).setText(i.getDescription());
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.sessionName)).setText(employer);
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.locationText)).setText(location);
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.roomText)).setText(room);
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.dateText)).setText(date);
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.timeText)).setText(time);
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.description)).setText(description);
+                ((TextView) InfoSessionActivity.this.findViewById(R.id.description)).scrollTo(0,0);
                 ((Button) InfoSessionActivity.this.findViewById(R.id.registerButton)).setOnClickListener(register);
                 ((Button) InfoSessionActivity.this.findViewById(R.id.mapButton)).setOnClickListener(map);
             }
