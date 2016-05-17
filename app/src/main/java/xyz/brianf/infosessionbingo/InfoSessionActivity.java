@@ -7,6 +7,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -30,14 +32,18 @@ import Resources.ResourcesParser;
 public class InfoSessionActivity extends AppCompatActivity implements JSONDownloader.onDownloadListener {
     String apiKey = "525683dba54d5b8d1b1de8d30606c00f"; //// TODO: 12/05/16 : Not hardcode this?
     ResourcesParser rparser = new ResourcesParser();
-    ArrayList<InfoSession> sessions;
+    ArrayList<InfoSession> sessions = null;
+    ArrayList<InfoSession> views = null;
+
     int currentSession = 0;
+    public final static String ID_SESSIONS = "xyz.brianf.infosessionbingo.SESSIONS";
 
     @Override
     protected  void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         //TODO: layout here? or in OnDownloadComplete. Maybe make a "downloadimg" message?
         setContentView(R.layout.activity_infosession);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.topbar);
         setSupportActionBar(toolbar);
 
@@ -53,12 +59,13 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         rparser.parseJSON();
 
         sessions = rparser.getInfoSessions();
+        views = sessions;
         //TODO: filter on request
-
+        filter(sessions, "MATH - Computer Science");
         final View.OnClickListener next = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (currentSession<(sessions.size()-1)) {
+                if (currentSession<(views.size()-1)) {
                     currentSession += 1;
                     updateDisplay(currentSession);
                 }
@@ -92,6 +99,48 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
             }}).show();
     }
 
+    // Menu icons are inflated just as they were with actionbar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // action with ID action_refresh was selected
+            case R.id.action_refresh:
+                pullInfosessions();
+                break;
+            // action with ID action_settings was selected
+            case R.id.action_settings:
+                //open and make settings
+                break;
+            case R.id.action_calendar:
+                createCalendarActivity();
+                break;
+            default:
+                break;
+        }
+
+        return true;
+    }
+
+
+    private void createCalendarActivity(){
+        ArrayList<ParcelableInfoSession> parcelledSessions = new ArrayList<>();
+        for (InfoSession i: sessions){
+            parcelledSessions.add(new ParcelableInfoSession(i));
+        }
+
+        Intent intent = new Intent(this, CalendarActivity.class);
+        intent.putParcelableArrayListExtra(ID_SESSIONS, parcelledSessions);
+        startActivity(intent);
+    }
+
 
     private void pullInfosessions(){
         rparser.setParseType(ResourcesParser.ParseType.INFOSESSIONS);
@@ -106,7 +155,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
 
 
     private void updateDisplay(int index){
-        final InfoSession i = sessions.get(index);
+        final InfoSession i = views.get(index);
         final View.OnClickListener register = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -150,15 +199,18 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
     }
 
     private void filter(ArrayList<InfoSession> lst, String audience ){
-        ArrayList<InfoSession> rems = new ArrayList<>();
+        ArrayList<InfoSession> filtered = new ArrayList<>();
         for (InfoSession item: lst){
-            if (! (getAudienceSplit(item.getAudience()).contains(audience))){
-                rems.add(item);
+            if ((getAudienceSplit(item.getAudience()).contains(audience))){
+                filtered.add(item);
             }
         }
-        for (InfoSession item: rems){
-            lst.remove(item);
-        }
+
+        views = filtered;
+    }
+
+    private void filterBasedOnDay(ArrayList<InfoSession> lst, String startdate){
+
     }
 
     private ArrayList<String> getAudienceSplit(String audience){

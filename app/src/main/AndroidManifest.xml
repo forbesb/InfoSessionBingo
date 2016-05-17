@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".BingoActivity"></activity>
-
+        <activity android:name=".CalendarActivity"></activity>
 
     </application>
 
