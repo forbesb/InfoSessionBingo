@@ -6,3 +6,5 @@
 .DS_Store
 /build
 /captures
+chromelog.txt
+chromerr.txt
