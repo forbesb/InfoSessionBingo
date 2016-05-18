@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.format.DateFormat;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +16,11 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 import Core.APIResult;
 import Core.JSONDownloader;
@@ -37,7 +42,8 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
 
     int currentSession = 0;
     public final static String ID_SESSIONS = "xyz.brianf.infosessionbingo.SESSIONS";
-
+    public final static String FILTER_DAY_NEVER = "@never";
+    public final static String FILTER_DAY_TODAY = "@today";
     @Override
     protected  void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -61,7 +67,9 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         sessions = rparser.getInfoSessions();
         views = sessions;
         //TODO: filter on request
-        filter(sessions, "MATH - Computer Science");
+        //filterByAudience(sessions, "MATH - Computer Science");
+        filterByDay(views, FILTER_DAY_TODAY, FILTER_DAY_NEVER);
+
         final View.OnClickListener next = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -198,7 +206,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         });
     }
 
-    private void filter(ArrayList<InfoSession> lst, String audience ){
+    private void filterByAudience(ArrayList<InfoSession> lst, String audience ){
         ArrayList<InfoSession> filtered = new ArrayList<>();
         for (InfoSession item: lst){
             if ((getAudienceSplit(item.getAudience()).contains(audience))){
@@ -209,7 +217,37 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         views = filtered;
     }
 
-    private void filterBasedOnDay(ArrayList<InfoSession> lst, String startdate){
+    private void filterByDay(ArrayList<InfoSession> lst, String startdate, String enddate){
+        long range = Long.MAX_VALUE;
+        ArrayList<InfoSession> filtered = new ArrayList<>();
+        if (startdate == FILTER_DAY_TODAY){
+            startdate = (new SimpleDateFormat("yyyy-MM-dd")).format(new Date());
+        }
+        if (enddate != FILTER_DAY_NEVER){
+            range = dateDifference(startdate, enddate);
+        }
+        long dd;
+        for (InfoSession sesh: lst){
+            dd = dateDifference(startdate, sesh.getDate()) ;
+            if (dd <= range && dd >= 0){
+                filtered.add(sesh);
+            }
+        }
+        views = filtered;
+
+    }
+
+    private long dateDifference(String first, String second){
+        java.text.DateFormat format = new SimpleDateFormat("yyyy-mm-dd", Locale.ENGLISH);
+        try {
+            Date firstDate = format.parse(first);
+            Date secondDate = format.parse(second);
+
+            return (secondDate.getTime() - firstDate.getTime());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0L; //in case of an error
 
     }
 
