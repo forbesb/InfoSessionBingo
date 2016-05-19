@@ -68,7 +68,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         views = sessions;
         //TODO: filter on request
         //filterByAudience(sessions, "MATH - Computer Science");
-        filterByDay(views, FILTER_DAY_TODAY, FILTER_DAY_NEVER);
+        views = filterByDay(views, FILTER_DAY_TODAY, FILTER_DAY_NEVER);
 
         final View.OnClickListener next = new View.OnClickListener() {
             @Override
@@ -206,7 +206,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         });
     }
 
-    private void filterByAudience(ArrayList<InfoSession> lst, String audience ){
+    public static ArrayList<InfoSession> filterByAudience(ArrayList<InfoSession> lst, String audience ){
         ArrayList<InfoSession> filtered = new ArrayList<>();
         for (InfoSession item: lst){
             if ((getAudienceSplit(item.getAudience()).contains(audience))){
@@ -214,10 +214,10 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
             }
         }
 
-        views = filtered;
+        return filtered;
     }
 
-    private void filterByDay(ArrayList<InfoSession> lst, String startdate, String enddate){
+    public static ArrayList<InfoSession> filterByDay(ArrayList<InfoSession> lst, String startdate, String enddate){
         long range = Long.MAX_VALUE;
         ArrayList<InfoSession> filtered = new ArrayList<>();
         if (startdate == FILTER_DAY_TODAY){
@@ -233,11 +233,11 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
                 filtered.add(sesh);
             }
         }
-        views = filtered;
+        return filtered;
 
     }
 
-    private long dateDifference(String first, String second){
+    private static long dateDifference(String first, String second){
         java.text.DateFormat format = new SimpleDateFormat("yyyy-mm-dd", Locale.ENGLISH);
         try {
             Date firstDate = format.parse(first);
@@ -251,7 +251,7 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
 
     }
 
-    private ArrayList<String> getAudienceSplit(String audience){
+    private static ArrayList<String> getAudienceSplit(String audience){
         String[] splits = audience.split("\"");
         ArrayList<String> audiences = new ArrayList<>();
         for (int i = 0; i< splits.length; i++){
