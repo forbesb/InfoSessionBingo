@@ -1,10 +1,13 @@
 package xyz.brianf.infosessionbingo;
 
+import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateFormat;
 import android.text.method.ScrollingMovementMethod;
@@ -12,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -19,6 +23,7 @@ import org.w3c.dom.Text;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -44,6 +49,10 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
     public final static String ID_SESSIONS = "xyz.brianf.infosessionbingo.SESSIONS";
     public final static String FILTER_DAY_NEVER = "@never";
     public final static String FILTER_DAY_TODAY = "@today";
+    private int startDay, startMonth, startYear, endDay=-1, endMonth=-1, endYear=-1;
+
+
+
     @Override
     protected  void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
@@ -54,6 +63,13 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         setSupportActionBar(toolbar);
 
         if (savedInstanceState == null){
+            Date today = new Date();
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(today);
+            startDay = cal.get(Calendar.DAY_OF_MONTH);
+            startMonth = cal.get(Calendar.MONTH);
+            startYear = cal.get(Calendar.YEAR);
+            System.out.println(startDay+ " " + startMonth + " " + startYear);
             pullInfosessions();
         }
 
@@ -130,6 +146,9 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
             case R.id.action_calendar:
                 createCalendarActivity();
                 break;
+            case R.id.action_filters:
+                createStartDateFilter();
+                break;
             default:
                 break;
         }
@@ -160,9 +179,44 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
 
     }
 
+    private void createStartDateFilter(){
+        final PopupMenu filterPopup = new PopupMenu(this, findViewById(R.id.action_filters));
+        filterPopup.getMenuInflater().inflate(R.menu.menu_filters, filterPopup.getMenu());
+        filterPopup.setOnMenuItemClickListener(
+                new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case R.id.startDateFilter:
+                                buildStartDialog();
+                                filterPopup.show();
+                                break;
+                            case R.id.endDateFilter:
+                                buildEndDialog();
+                                filterPopup.show();
+                                break;
+                            case R.id.updateFilters:
+                                updateFilters();
+                                break;
+                            default:
+                                break;
+                        }
 
+                        return false;
+                    }
+                }
+        );
+        filterPopup.show();
+
+
+    }
 
     private void updateDisplay(int index){
+        if (index>=views.size()){
+            System.out.println(index);
+            ((TextView) InfoSessionActivity.this.findViewById(R.id.sessionName)).setText("No Info Sessions Found");
+            return;
+        }
         final InfoSession i = views.get(index);
         final View.OnClickListener register = new View.OnClickListener() {
             @Override
@@ -262,6 +316,48 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
             //System.out.println(a);
         }
         return audiences;
+    }
+
+    private void updateFilters(){
+        views = filterByDay(sessions, String.format("%04d-%02d-%02d", startYear, startMonth, startDay), endYear == -1 ? FILTER_DAY_NEVER : String.format("%04d-%02d-%02d", endYear, endMonth, endDay));
+        updateDisplay(0);
+    }
+
+    private void buildStartDialog(){
+        DatePickerDialog dateDialog = new DatePickerDialog(InfoSessionActivity.this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                startYear = year;
+                startMonth = monthOfYear;
+                startDay = dayOfMonth;
+            }
+        }, startYear, startMonth, startDay);
+        dateDialog.show();
+    }
+
+    private void buildEndDialog(){
+        DatePickerDialog dateDialog = new DatePickerDialog(InfoSessionActivity.this, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                endYear = year;
+                endMonth = monthOfYear;
+                endDay = dayOfMonth;
+            }
+        },
+                endYear == -1 ? startYear : endYear,
+                endMonth == -1 ? startMonth : endMonth,
+                endDay == -1 ? startDay : endDay);
+
+        dateDialog.setButton(DialogInterface.BUTTON_NEUTRAL, "Never", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                endYear = -1;
+                endDay = -1;
+                endMonth = -1;
+            }
+        });
+        dateDialog.show();
+
     }
 
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <item
+        android:id="@+id/startDateFilter"
+        android:title="Start Date"
+        />
+    <item
+        android:id="@+id/endDateFilter"
+        android:title="End Date"
+        />
+
+    <item
+        android:id="@+id/audienceFilter"
+        android:title="Audience"
+        />
+    <item
+        android:id="@+id/updateFilters"
+        android:title="Update"
+        />
+
+
+</menu>
