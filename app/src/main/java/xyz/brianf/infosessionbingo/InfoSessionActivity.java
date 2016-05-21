@@ -260,12 +260,16 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         });
     }
 
-    public static ArrayList<InfoSession> filterByAudience(ArrayList<InfoSession> lst, String audience ){
+    public static ArrayList<InfoSession> filterByAudience(ArrayList<InfoSession> lst, String[] audience ){
         ArrayList<InfoSession> filtered = new ArrayList<>();
         for (InfoSession item: lst){
-            if ((getAudienceSplit(item.getAudience()).contains(audience))){
-                filtered.add(item);
+            for (String field: audience){
+                if ((getAudienceSplit(item.getAudience()).contains(field))){
+                    filtered.add(item);
+                    break;
+                }
             }
+
         }
 
         return filtered;
@@ -283,7 +287,9 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
         long dd;
         for (InfoSession sesh: lst){
             dd = dateDifference(startdate, sesh.getDate()) ;
+
             if (dd <= range && dd >= 0){
+                System.out.println(sesh.getDate());
                 filtered.add(sesh);
             }
         }
@@ -357,6 +363,10 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
             }
         });
         dateDialog.show();
+
+    }
+
+    private void buildAudienceDialog(){
 
     }
 
