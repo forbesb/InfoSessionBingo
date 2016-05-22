@@ -1,4 +1,4 @@
-package xyz.brianf.infosessionbingo;
+package xyz.brianf.WatInfoSessions;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,7 +8,6 @@ import android.widget.ListView;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import Resources.InfoSession;

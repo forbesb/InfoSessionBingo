@@ -1,4 +1,4 @@
-package xyz.brianf.infosessionbingo;
+package xyz.brianf.WatInfoSessions;
 
 import org.junit.Test;
 
