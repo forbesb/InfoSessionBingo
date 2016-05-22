@@ -47,6 +47,14 @@ public class CalendarActivity extends AppCompatActivity {
         gc.set(year, month, day);
         String date = df.format(gc.getTime());
         views = InfoSessionActivity.filterByDay(sessions, date, date );
-        ListView lst = (ListView) findViewById(R.id.listOfEvents);
+        ListView lst = (ListView) findViewById(R.id.listOfEvents); //TODO: Once, the calendar showed each session twice in the list. Figure out why.
+        InfoSessionAdapter adapter = new InfoSessionAdapter(this, views, getResources());
+        lst.setAdapter(adapter);
+
+    }
+
+    public void onItemClick(int p){
+        System.out.println("The thing");
+        //do the thing
     }
 }
