@@ -1,19 +1,27 @@
 package xyz.brianf.WatInfoSessions;
 
+import android.app.ActionBar;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import java.text.ParseException;
@@ -362,7 +370,44 @@ public class InfoSessionActivity extends AppCompatActivity implements JSONDownlo
 
     }
 
+    final ArrayList<String> audiences = new ArrayList<>(); //populate properly
+    private void populateAuduences(){
+        audiences.clear();
+        audiences.add("MATH - Computer Science");
+        audiences.add("ENG - Software");
+        audiences.add("ENG - Electrical");
+        audiences.add("ENG - Computer");
+        audiences.add("ARTS - Speech Communication");
+    }
+
     private void buildAudienceDialog(){
+        if (audiences.isEmpty()){
+            populateAuduences();
+        }
+        boolean[] checkSelected = new boolean[audiences.size()];
+        for (int i = 0; i<audiences.size(); i++){
+            checkSelected[i]=false;
+        }
+        LayoutInflater inflater = (LayoutInflater) InfoSessionActivity.this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LinearLayout layout = (LinearLayout) inflater.inflate(R.layout.popup_audience, (ViewGroup) findViewById(R.id.audiencePopup));
+
+        final PopupWindow popup = new PopupWindow(layout, ActionBar.LayoutParams.MATCH_PARENT, ActionBar.LayoutParams.WRAP_CONTENT, true);
+        popup.setBackgroundDrawable(new BitmapDrawable());
+        popup.setTouchable(true);
+        popup.setTouchInterceptor(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction()==MotionEvent.ACTION_OUTSIDE){
+                    popup.dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
+        popup.setContentView(layout);
+        popup.showAsDropDown(findViewById(R.id.main_layout));
+
+
 
     }
 
